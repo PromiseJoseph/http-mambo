@@ -1,4 +1,18 @@
-use std::net::SocketAddr;
+use std::{collections::HashMap, net::SocketAddr};
+
+#[derive(Debug, Clone)]
+pub struct RequestLines {
+    pub method: String,
+    pub path: String,
+    pub version: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct HttpRequest {
+    pub request_lines: RequestLines,
+    pub headers: HashMap<String, String>,
+    pub body: String,
+}
 
 #[derive(Debug, Clone)]
 pub struct Client {
