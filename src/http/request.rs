@@ -3,7 +3,7 @@ use crate::types::RequestLines;
 use std::collections::HashMap;
 
 /**
- *  Parse an HTTP request string and return a HttpRequest struct.
+ *  Parse a request string and return a HttpRequest struct.
  */
 impl HttpRequest {
     pub fn parse_request(req: &str) -> Self {
