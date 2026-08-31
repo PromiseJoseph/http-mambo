@@ -2,6 +2,7 @@ mod listener;
 mod stream;
 mod types;
 use types::Client;
+mod http;
 
 const DEFAULT_SERVER_ADDRESS: &str = "127.0.0.1:8000";
 #[tokio::main]
