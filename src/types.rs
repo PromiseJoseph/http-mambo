@@ -13,6 +13,11 @@ pub struct HttpRequest {
     pub headers: HashMap<String, String>,
     pub body: String,
 }
+pub struct HttpResponse {
+    pub status_code: u16,
+    pub headers: HashMap<String, String>,
+    pub body: String,
+}
 
 #[derive(Debug, Clone)]
 pub struct Client {
