@@ -1,6 +1,7 @@
-use crate::http::handler::handle_request;
+use crate::http::handler::home;
 use crate::types::Client;
 use crate::types::HttpRequest;
+use crate::types::Router;
 use std::io::{Error, ErrorKind};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
@@ -23,11 +24,20 @@ pub async fn handle_stream(mut reader: OwnedReadHalf, mut writer: OwnedWriteHalf
 
                 println!("Parsed request: {:#?}", parsed_req);
 
-                /*  Process the request and send a response
-                   res is an instance of HttpResponse, which is created by the handle_request function based on the parsed request. The response is then converted to a string using the new() method and sent back to the client using the writer.
-                */
-                let res = handle_request(&parsed_req);
+                /*
+                ==========================
+                 Router test
+                 ==========================
+                 */
 
+                let mut router = Router::new();
+                router.get("/hello", home); //using get method to test the 405 method not allowed response using a browser meh!
+
+                let res = router.handle_request(&parsed_req);
+
+                // ==========================
+
+                // Send the response back to the client
                 writer
                     .write_all(res.new().as_bytes())
                     .await
