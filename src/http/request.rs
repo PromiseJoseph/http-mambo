@@ -1,9 +1,12 @@
+use crate::types::HttpMethod;
 use crate::types::HttpRequest;
 use crate::types::RequestLines;
+
 use std::collections::HashMap;
+use std::println;
 
 /**
- *  Parse a request string and return a HttpRequest struct.
+ *  Parsea request string and return a HttpRequest struct.
  */
 impl HttpRequest {
     pub fn parse_request(req: &str) -> Self {
@@ -14,11 +17,7 @@ impl HttpRequest {
 
         let mut headers = HashMap::new();
 
-        // println!(
-        //     "Request line: {}, line: {}",
-        //     request_line_,
-        //     lines.clone().collect::<Vec<&str>>().join(", ")
-        // );
+        println!("Request line: {}", request_line_); // for debugging purposes, to be removed later
 
         // Parse headers
         for line in lines {
@@ -27,17 +26,26 @@ impl HttpRequest {
             }
         }
 
-        // println!(
-        //     "Header host: {}, others: {:?}",
-        //     headers.get("Host").unwrap_or(&"".to_string()),
-        //     headers
-        // );
-
         // Parse the request line
         let request_item: Vec<&str> = request_line_.split_whitespace().collect();
 
+        let method = match request_item.get(0).copied().unwrap_or("") {
+            "GET" => HttpMethod::GET,
+            "POST" => HttpMethod::POST,
+            "PUT" => HttpMethod::PUT,
+            "PATCH" => HttpMethod::PATCH,
+            "DELETE" => HttpMethod::DELETE,
+            "OPTIONS" => HttpMethod::OPTIONS,
+            "HEAD" => HttpMethod::HEAD,
+            _ => {
+                // Handle invalid method
+                //default to GET for now,
+                HttpMethod::GET
+            }
+        };
+
         let request_lines = RequestLines {
-            method: request_item.get(0).unwrap_or(&"").to_string(),
+            method: method,
             path: request_item.get(1).unwrap_or(&"").to_string(),
             version: request_item.get(2).unwrap_or(&"").to_string(),
         };
