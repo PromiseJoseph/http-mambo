@@ -7,7 +7,7 @@ mod http;
 const DEFAULT_SERVER_ADDRESS: &str = "127.0.0.1:8000";
 #[tokio::main]
 async fn main() {
-    println!("Starting ChatMambo server ");
+    println!("Starting HttpMambo server ");
     let arg = std::env::args().nth(1);
     let custom_addr = arg.as_deref();
     let listener = listener::bind_addresses(custom_addr).await.unwrap();
