@@ -1,12 +1,17 @@
-use crate::http::handler::home;
 use crate::types::Client;
 use crate::types::HttpRequest;
 use crate::types::Router;
-use std::io::{Error, ErrorKind};
+use std::sync::Arc;
+// use std::io::{Error, ErrorKind};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
 
-pub async fn handle_stream(mut reader: OwnedReadHalf, mut writer: OwnedWriteHalf, client: Client) {
+pub async fn handle_stream(
+    mut reader: OwnedReadHalf,
+    mut writer: OwnedWriteHalf,
+    client: Client,
+    router: Arc<Router>,
+) {
     let mut buffer = [0; 1024];
     loop {
         let peer_addr = &client.peer_addr;
@@ -24,18 +29,7 @@ pub async fn handle_stream(mut reader: OwnedReadHalf, mut writer: OwnedWriteHalf
 
                 println!("Parsed request: {:#?}", parsed_req);
 
-                /*
-                ==========================
-                 Router test
-                 ==========================
-                 */
-
-                let mut router = Router::new();
-                router.get("/hello", home); //using get method to test the 405 method not allowed response using a browser meh!
-
                 let res = router.handle_request(&parsed_req);
-
-                // ==========================
 
                 // Send the response back to the client
                 writer

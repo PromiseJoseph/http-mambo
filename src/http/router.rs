@@ -1,4 +1,4 @@
-use crate::types::{Handler, HttpMethod, HttpRequest, HttpResponse, Route, Router};
+use crate::types::{Handler, HttpMethod, HttpRequest, HttpResponse, Route, Router, StatusCode};
 use std::collections::HashMap;
 
 impl Router {
@@ -6,27 +6,36 @@ impl Router {
         Self { routes: Vec::new() }
     }
 
-    pub fn add_route(&mut self, route: Route) {
+    fn add_route(&mut self, route: Route) {
         self.routes.push(route);
     }
 
-    pub fn handle_request(&self, request: &HttpRequest) -> HttpResponse {
-        for route in &self.routes {
-            if route.path == request.request_lines.path
-                && route.method == request.request_lines.method
-            {
-                return (route.handler)(request);
-            }
+    // Create a new route
+    fn route(path: &str, handler: Handler, method: HttpMethod) -> Route {
+        Route {
+            path: path.to_string(),
+            method: method,
+            handler,
         }
+    }
 
+    // Handles  incoming HTTP requests and return the appropriate response
+    pub fn handle_request(&self, request: &HttpRequest) -> HttpResponse {
         let mut path_found = false; // Flag to check if the path was found but the method was not allowed
 
+        // let mut method_found = false;
         let mut allowed_methods: Vec<HttpMethod> = Vec::new(); // Vector to store allowed methods for the found path
 
         for route in &self.routes {
-            if route.path == request.request_lines.path {
+            println!(
+                "Route path: {}, method: {:?}, request path: {}, request method: {:?}",
+                route.path, route.method, request.request_lines.path, request.request_lines.method
+            ); // Debugging output to check the route and request details, to be removed later
+
+            if route.path_matches(&request) {
                 path_found = true;
                 allowed_methods.push(route.method.clone()); // Store the allowed method for the found path
+
                 if route.method == request.request_lines.method {
                     return (route.handler)(request);
                 }
@@ -35,7 +44,7 @@ impl Router {
 
         if path_found {
             return HttpResponse {
-                status_code: 405,
+                status_code: StatusCode::METHOD_NOT_ALLOWED,
                 headers: HashMap::from([(
                     "Allow".to_string(),
                     allowed_methods
@@ -48,16 +57,9 @@ impl Router {
             };
         }
         HttpResponse {
-            status_code: 404,
+            status_code: StatusCode::NOT_FOUND,
             headers: HashMap::new(),
             body: "Not Found".to_string(),
-        }
-    }
-    fn route(path: &str, handler: Handler, method: HttpMethod) -> Route {
-        Route {
-            path: path.to_string(),
-            method: method,
-            handler,
         }
     }
 

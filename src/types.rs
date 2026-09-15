@@ -16,7 +16,7 @@ pub struct HttpRequest {
 
 #[derive(Debug, Clone)]
 pub struct HttpResponse {
-    pub status_code: u16,
+    pub status_code: StatusCode,
     pub headers: HashMap<String, String>,
     pub body: String,
 }
@@ -49,5 +49,5 @@ pub struct Router {
     pub routes: Vec<Route>,
 }
 
-#[derive(Debug, Clone)]
-pub struct HttpStatus(u16, &'static str);
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct StatusCode(pub u16);

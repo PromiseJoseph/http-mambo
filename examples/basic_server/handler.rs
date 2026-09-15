@@ -1,5 +1,4 @@
-use crate::types::HttpRequest;
-use crate::types::HttpResponse;
+use http_mambo::types::{HttpRequest, HttpResponse, StatusCode};
 use std::collections::HashMap;
 /**
  *  A test handler for the home route.
@@ -12,7 +11,7 @@ pub fn home(request: &HttpRequest) -> HttpResponse {
     );
 
     HttpResponse {
-        status_code: 200,
+        status_code: StatusCode::OK,
         headers: HashMap::new(),
         body,
     }
