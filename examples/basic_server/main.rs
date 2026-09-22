@@ -8,11 +8,6 @@ const DEFAULT_SERVER_ADDRESS: &str = "127.0.0.1:8000";
 
 #[tokio::main]
 async fn main() {
-    let mut router = Router::new();
-
-    router.post("/hello", home);
-    router.get("/", home);
-
     let arg = std::env::args().nth(1);
 
     let custom_addr: &str = match arg.as_deref() {
@@ -21,6 +16,12 @@ async fn main() {
     };
 
     let listener = listener::bind_addresses(custom_addr).await.unwrap();
+
+    // Create a new router and register routes
+    let mut router = Router::new();
+
+    router.post("/hello", home);
+    router.get("/", home);
 
     let router = Arc::new(router);
 
@@ -37,7 +38,10 @@ async fn main() {
         let router = Arc::clone(&router);
 
         tokio::spawn(async move {
-            stream::handle_stream(reader, writer, client, router).await;
+            if let Err(e) = stream::handle_stream(reader, writer, client, router).await {
+                eprintln!("Error handling stream: {}", e);
+            }
+            //or let _ = stream::handle_stream(reader, writer, client, router).await; if you want to ignore the error..
         });
     }
 }

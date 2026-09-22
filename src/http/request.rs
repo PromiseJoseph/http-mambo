@@ -3,8 +3,6 @@ use crate::types::HttpRequest;
 use crate::types::RequestLines;
 
 use std::collections::HashMap;
-use std::println;
-
 /**
  *  Parsea request string and return a HttpRequest struct.
  */
