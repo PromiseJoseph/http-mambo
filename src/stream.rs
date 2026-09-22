@@ -2,7 +2,8 @@ use crate::types::Client;
 use crate::types::HttpRequest;
 use crate::types::Router;
 use std::sync::Arc;
-// use std::io::{Error, ErrorKind};
+
+use std::io::Error;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
 
@@ -11,7 +12,7 @@ pub async fn handle_stream(
     mut writer: OwnedWriteHalf,
     client: Client,
     router: Arc<Router>,
-) {
+) -> Result<(), Error> {
     let mut buffer = [0; 1024];
     loop {
         let peer_addr = &client.peer_addr;
@@ -32,17 +33,12 @@ pub async fn handle_stream(
                 let res = router.handle_request(&parsed_req);
 
                 // Send the response back to the client
-                writer
-                    .write_all(res.new().as_bytes())
-                    .await
-                    .unwrap_or_else(|e| {
-                        eprintln!("Failed to send response to {}: {}", peer_addr, e);
-                    });
+                writer.write_all(res.to_http_string().as_bytes()).await?;
             }
             Err(e) => {
-                eprintln!("Failed to read from {}: {}", peer_addr, e);
-                break;
+                return Err(e);
             }
         }
     }
+    Ok(())
 }

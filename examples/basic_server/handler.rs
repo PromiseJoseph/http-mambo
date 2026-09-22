@@ -10,9 +10,13 @@ pub fn home(request: &HttpRequest) -> HttpResponse {
         request.request_lines.path
     );
 
-    HttpResponse {
-        status_code: StatusCode::OK,
-        headers: HashMap::new(),
-        body,
-    }
+    let mut headers = HashMap::new();
+    headers.insert("Content-Type".to_string(), "text/html".to_string());
+    //headers.insert("Content-Length".to_string(), 200.to_string()); // should ignored by the response builder
+
+    HttpResponse::new().with_body(body).with_headers(headers)
+    //or
+    //HttpResponse::with_body(HttpResponse::new(), body)
+    //or
+    //HttpResponse::with_status_and_body(StatusCode::OK, body)
 }
