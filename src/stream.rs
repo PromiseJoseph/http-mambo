@@ -30,7 +30,7 @@ pub async fn handle_stream(
 
                 println!("Parsed request: {:#?}", parsed_req);
 
-                let res = router.handle_request(&parsed_req);
+                let res = router.handle_request(parsed_req).await;
 
                 // Send the response back to the client
                 writer.write_all(res.to_http_string().as_bytes()).await?;

@@ -17,6 +17,8 @@ async fn main() {
 
     let listener = listener::bind_addresses(custom_addr).await.unwrap();
 
+    println!("Server listening on: {:?}", listener.local_addr().unwrap());
+
     // Create a new router and register routes
     let mut router = Router::new();
 
@@ -25,7 +27,6 @@ async fn main() {
 
     let router = Arc::new(router);
 
-    println!("Server listening on: {:?}", listener.local_addr().unwrap());
     loop {
         let (stream, peer_addr) = listener
             .accept()
@@ -41,7 +42,7 @@ async fn main() {
             if let Err(e) = stream::handle_stream(reader, writer, client, router).await {
                 eprintln!("Error handling stream: {}", e);
             }
-            //or let _ = stream::handle_stream(reader, writer, client, router).await; if you want to ignore the error..
+            //or let _ = stream::handle_stream(reader, writer, client, router).await; if you wish to ignre the err..
         });
     }
 }

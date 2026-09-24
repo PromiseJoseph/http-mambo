@@ -1,4 +1,6 @@
-use crate::types::{Handler, HttpMethod, HttpRequest, HttpResponse, Route, Router, StatusCode};
+use crate::types::{
+    BoxFuture, Handler, HttpMethod, HttpRequest, HttpResponse, Route, Router, StatusCode,
+};
 use std::collections::HashMap;
 
 impl Router {
@@ -20,7 +22,7 @@ impl Router {
     }
 
     // Handles  incoming HTTP requests and return the appropriate response
-    pub fn handle_request(&self, request: &HttpRequest) -> HttpResponse {
+    pub async fn handle_request(&self, request: HttpRequest) -> HttpResponse {
         let mut path_found = false; // Flag to check if the path was found but the method was not allowed
 
         // let mut method_found = false;
@@ -37,7 +39,7 @@ impl Router {
                 allowed_methods.push(route.method.clone()); // Store the allowed method for the found path
 
                 if route.method == request.request_lines.method {
-                    return (route.handler)(request);
+                    return (route.handler)(request).await;
                 }
             }
         }
@@ -63,31 +65,73 @@ impl Router {
         }
     }
 
-    pub fn get(&mut self, path: &str, handler: Handler) {
+    pub fn get<F, Fut>(&mut self, path: &str, handler: F)
+    where
+        F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = HttpResponse> + Send + 'static,
+    {
+        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
+
         self.add_route(Self::route(path, handler, HttpMethod::GET));
     }
 
-    pub fn post(&mut self, path: &str, handler: Handler) {
+    pub fn post<F, Fut>(&mut self, path: &str, handler: F)
+    where
+        F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = HttpResponse> + Send + 'static,
+    {
+        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
+
         self.add_route(Self::route(path, handler, HttpMethod::POST));
     }
 
-    pub fn put(&mut self, path: &str, handler: Handler) {
+    pub fn put<F, Fut>(&mut self, path: &str, handler: F)
+    where
+        F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = HttpResponse> + Send + 'static,
+    {
+        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
+
         self.add_route(Self::route(path, handler, HttpMethod::PUT));
     }
 
-    pub fn delete(&mut self, path: &str, handler: Handler) {
+    pub fn delete<F, Fut>(&mut self, path: &str, handler: F)
+    where
+        F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = HttpResponse> + Send + 'static,
+    {
+        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
+
         self.add_route(Self::route(path, handler, HttpMethod::DELETE));
     }
 
-    pub fn patch(&mut self, path: &str, handler: Handler) {
+    pub fn patch<F, Fut>(&mut self, path: &str, handler: F)
+    where
+        F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = HttpResponse> + Send + 'static,
+    {
+        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
+
         self.add_route(Self::route(path, handler, HttpMethod::PATCH));
     }
 
-    pub fn options(&mut self, path: &str, handler: Handler) {
+    pub fn options<F, Fut>(&mut self, path: &str, handler: F)
+    where
+        F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = HttpResponse> + Send + 'static,
+    {
+        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
+
         self.add_route(Self::route(path, handler, HttpMethod::OPTIONS));
     }
 
-    pub fn head(&mut self, path: &str, handler: Handler) {
+    pub fn head<F, Fut>(&mut self, path: &str, handler: F)
+    where
+        F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = HttpResponse> + Send + 'static,
+    {
+        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
+
         self.add_route(Self::route(path, handler, HttpMethod::HEAD));
     }
 }

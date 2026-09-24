@@ -1,3 +1,5 @@
+use std::future::Future;
+use std::pin::Pin;
 use std::{collections::HashMap, net::SocketAddr};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -26,7 +28,9 @@ pub struct Client {
     pub peer_addr: SocketAddr,
 }
 
-pub type Handler = fn(&HttpRequest) -> HttpResponse;
+pub type BoxFuture = Pin<Box<dyn Future<Output = HttpResponse> + Send>>;
+
+pub type Handler = Box<dyn Fn(HttpRequest) -> BoxFuture + Send + Sync>;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum HttpMethod {
@@ -39,7 +43,6 @@ pub enum HttpMethod {
     HEAD,
 }
 
-#[derive(Debug, Clone)]
 pub struct Route {
     pub path: String,
     pub method: HttpMethod,
