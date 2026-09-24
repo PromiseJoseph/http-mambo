@@ -70,9 +70,7 @@ impl Router {
         F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = HttpResponse> + Send + 'static,
     {
-        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
-
-        self.add_route(Self::route(path, handler, HttpMethod::GET));
+        self.register_route(path, handler, HttpMethod::GET);
     }
 
     pub fn post<F, Fut>(&mut self, path: &str, handler: F)
@@ -80,9 +78,7 @@ impl Router {
         F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = HttpResponse> + Send + 'static,
     {
-        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
-
-        self.add_route(Self::route(path, handler, HttpMethod::POST));
+        self.register_route(path, handler, HttpMethod::POST);
     }
 
     pub fn put<F, Fut>(&mut self, path: &str, handler: F)
@@ -90,9 +86,7 @@ impl Router {
         F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = HttpResponse> + Send + 'static,
     {
-        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
-
-        self.add_route(Self::route(path, handler, HttpMethod::PUT));
+        self.register_route(path, handler, HttpMethod::PUT);
     }
 
     pub fn delete<F, Fut>(&mut self, path: &str, handler: F)
@@ -100,9 +94,7 @@ impl Router {
         F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = HttpResponse> + Send + 'static,
     {
-        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
-
-        self.add_route(Self::route(path, handler, HttpMethod::DELETE));
+        self.register_route(path, handler, HttpMethod::DELETE);
     }
 
     pub fn patch<F, Fut>(&mut self, path: &str, handler: F)
@@ -110,9 +102,7 @@ impl Router {
         F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = HttpResponse> + Send + 'static,
     {
-        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
-
-        self.add_route(Self::route(path, handler, HttpMethod::PATCH));
+        self.register_route(path, handler, HttpMethod::PATCH);
     }
 
     pub fn options<F, Fut>(&mut self, path: &str, handler: F)
@@ -120,9 +110,7 @@ impl Router {
         F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = HttpResponse> + Send + 'static,
     {
-        let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
-
-        self.add_route(Self::route(path, handler, HttpMethod::OPTIONS));
+        self.register_route(path, handler, HttpMethod::OPTIONS);
     }
 
     pub fn head<F, Fut>(&mut self, path: &str, handler: F)
@@ -130,8 +118,17 @@ impl Router {
         F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
         Fut: Future<Output = HttpResponse> + Send + 'static,
     {
+        self.register_route(path, handler, HttpMethod::HEAD);
+    }
+
+    // Register a route with the specified path, handler, and HTTP method
+    pub fn register_route<F, Fut>(&mut self, path: &str, handler: F, method: HttpMethod)
+    where
+        F: Fn(HttpRequest) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = HttpResponse> + Send + 'static,
+    {
         let handler = Box::new(move |request: HttpRequest| Box::pin(handler(request)) as BoxFuture);
 
-        self.add_route(Self::route(path, handler, HttpMethod::HEAD));
+        self.add_route(Self::route(path, handler, method));
     }
 }
