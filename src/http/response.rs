@@ -33,11 +33,11 @@ impl HttpResponse {
      * Builder methods for the response fields
      * Configure the response with status code, and body
      */
-    pub fn with_status_and_body(status_code: StatusCode, body: String) -> Self {
+    pub fn with_status_and_body(status_code: StatusCode, body: Vec<u8>) -> Self {
         Self {
             status_code,
             headers: HashMap::new(),
-            body: body.into_bytes(),
+            body: body,
         }
     } //shorthand for creating a response with status code and body
 
@@ -49,8 +49,8 @@ impl HttpResponse {
         }
     }
 
-    pub fn with_body(mut self, body: String) -> Self {
-        self.body = body.into_bytes();
+    pub fn with_body(mut self, body: Vec<u8>) -> Self {
+        self.body = body;
         self
     }
 
