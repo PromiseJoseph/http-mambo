@@ -33,7 +33,7 @@ pub async fn handle_stream(
                 let res = router.handle_request(parsed_req).await;
 
                 // Send the response back to the client
-                writer.write_all(res.to_http_string().as_bytes()).await?;
+                writer.write_all(&res.to_http_bytes()).await?;
             }
             Err(e) => {
                 return Err(e);

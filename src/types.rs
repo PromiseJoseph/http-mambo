@@ -20,7 +20,7 @@ pub struct HttpRequest {
 pub struct HttpResponse {
     pub status_code: StatusCode,
     pub headers: HashMap<String, String>,
-    pub body: String,
+    pub body: Vec<u8>,
 }
 
 #[derive(Debug, Clone)]
