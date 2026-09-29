@@ -55,13 +55,13 @@ impl Router {
                         .collect::<Vec<String>>()
                         .join(", "),
                 )]),
-                body: "Method Not Allowed".to_string(),
+                body: "Method Not Allowed".as_bytes().to_vec(),
             };
         }
         HttpResponse {
             status_code: StatusCode::NOT_FOUND,
             headers: HashMap::new(),
-            body: "Not Found".to_string(),
+            body: "Not Found".as_bytes().to_vec(),
         }
     }
 

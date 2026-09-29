@@ -10,7 +10,7 @@ impl HttpResponse {
         Self {
             status_code: StatusCode::OK,
             headers: HashMap::new(),
-            body: String::new(),
+            body: Vec::new(),
         }
     }
 
@@ -37,7 +37,7 @@ impl HttpResponse {
         Self {
             status_code,
             headers: HashMap::new(),
-            body,
+            body: body.into_bytes(),
         }
     } //shorthand for creating a response with status code and body
 
@@ -45,12 +45,12 @@ impl HttpResponse {
         Self {
             status_code,
             headers: HashMap::new(),
-            body: String::new(),
+            body: Vec::new(),
         }
     }
 
     pub fn with_body(mut self, body: String) -> Self {
-        self.body = body;
+        self.body = body.into_bytes();
         self
     }
 
@@ -59,16 +59,15 @@ impl HttpResponse {
         self
     }
 
-    pub fn to_http_string(self) -> String {
-        let mut response = String::new();
+    pub fn to_http_bytes(self) -> Vec<u8> {
+        let mut response = Vec::new();
 
         let reason_phrase = self.status_code.reason_phrase();
 
         // Add the status line
-        response.push_str(&format!(
-            "HTTP/1.1 {} {}\r\n",
-            self.status_code.0, reason_phrase
-        ));
+        response.extend_from_slice(
+            format!("HTTP/1.1 {} {}\r\n", self.status_code.0, reason_phrase).as_bytes(),
+        );
 
         // Add the headers
         for (key, value) in &self.headers {
@@ -76,16 +75,13 @@ impl HttpResponse {
             if key.eq_ignore_ascii_case("Content-Length") {
                 continue;
             }
-            response.push_str(&format!("{}: {}\r\n", key, value));
+            response.extend_from_slice(format!("{}: {}\r\n", key, value).as_bytes());
         }
 
-        response.push_str(&format!(
-            "Content-Length: {}\r\n",
-            self.body.as_bytes().len()
-        ));
+        response.extend_from_slice(format!("Content-Length: {}\r\n", self.body.len()).as_bytes());
 
-        response.push_str("\r\n");
-        response.push_str(&self.body);
+        response.extend_from_slice(b"\r\n");
+        response.extend_from_slice(&self.body);
 
         response
     }
