@@ -29,11 +29,6 @@ impl Router {
         let mut allowed_methods: Vec<HttpMethod> = Vec::new(); // Vector to store allowed methods for the found path
 
         for route in &self.routes {
-            println!(
-                "Route path: {}, method: {:?}, request path: {}, request method: {:?}",
-                route.path, route.method, request.request_lines.path, request.request_lines.method
-            ); // Debugging output to check the route and request details, to be removed later
-
             if route.path_matches(&request) {
                 path_found = true;
                 allowed_methods.push(route.method.clone()); // Store the allowed method for the found path

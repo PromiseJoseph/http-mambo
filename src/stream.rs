@@ -24,7 +24,7 @@ pub async fn handle_stream(
             }
             Ok(bytes) => {
                 let request = String::from_utf8_lossy(&buffer[..bytes]);
-                println!("Received test request from {}: {}", peer_addr, request);
+                println!("Received a request from  {}", peer_addr);
 
                 let parsed_req = HttpRequest::parse_request(&request);
 

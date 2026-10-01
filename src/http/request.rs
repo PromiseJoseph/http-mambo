@@ -15,8 +15,6 @@ impl HttpRequest {
 
         let mut headers = HashMap::new();
 
-        println!("Request line: {}", request_line_); // for debugging purposes, to be removed later
-
         // Parse headers
         for line in lines {
             if let Some((key, value)) = line.split_once(": ") {
