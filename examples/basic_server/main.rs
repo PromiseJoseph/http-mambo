@@ -22,8 +22,9 @@ async fn main() {
     // Create a new router and register routes
     let mut router = Router::new();
 
-    router.post("/hello", home);
-    router.get("/", home);
+    router.post("/", home);
+    router.get("/test/:id<u16>", home);
+    router.get("/testany/:id", home);
 
     let router = Arc::new(router);
 

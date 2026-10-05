@@ -28,9 +28,9 @@ pub struct Client {
     pub peer_addr: SocketAddr,
 }
 
-pub type BoxFuture = Pin<Box<dyn Future<Output = HttpResponse> + Send>>;
+pub(crate) type BoxFuture = Pin<Box<dyn Future<Output = HttpResponse> + Send>>;
 
-pub type Handler = Box<dyn Fn(HttpRequest) -> BoxFuture + Send + Sync>;
+pub(crate) type Handler = Box<dyn Fn(HttpRequest) -> BoxFuture + Send + Sync>;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum HttpMethod {
@@ -43,14 +43,20 @@ pub enum HttpMethod {
     HEAD,
 }
 
-pub struct Route {
+pub(crate) struct Route {
     pub path: String,
     pub method: HttpMethod,
     pub handler: Handler,
 }
 pub struct Router {
-    pub routes: Vec<Route>,
+    pub(crate) routes: Vec<Route>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StatusCode(pub u16);
+
+#[derive(Debug, PartialEq)]
+pub(crate) enum ParamType {
+    String,
+    U16,
+}
