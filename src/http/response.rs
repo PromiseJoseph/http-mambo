@@ -49,11 +49,15 @@ impl HttpResponse {
         }
     }
 
-    pub fn with_body(mut self, body: Vec<u8>) -> Self {
-        self.body = body;
+    pub fn with_body(mut self, body: String) -> Self {
+        self.body = body.into_bytes();
         self
     }
 
+    pub fn with_body_bytes(mut self, body: Vec<u8>) -> Self {
+        self.body = body;
+        self
+    }
     pub fn with_headers(mut self, headers: HashMap<String, String>) -> Self {
         self.headers = headers;
         self

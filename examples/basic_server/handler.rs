@@ -14,11 +14,9 @@ pub async fn home(request: HttpRequest) -> HttpResponse {
     headers.insert("Content-Type".to_string(), "text/html".to_string());
     //headers.insert("Content-Length".to_string(), 200.to_string()); // should ignored by the response builder
 
-    HttpResponse::new()
-        .with_body(body.into_bytes())
-        .with_headers(headers)
+    HttpResponse::new().with_body(body).with_headers(headers)
     //or
-    //HttpResponse::with_body(HttpResponse::new(), body)
+    //HttpResponse::with_body_bytes(HttpResponse::new(), body.into_bytes())
     //or
     //HttpResponse::with_status_and_body(StatusCode::OK, body)
 }
